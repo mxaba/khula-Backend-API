@@ -31,19 +31,26 @@ Backend API for agri-dealers to manage product inventory and process farmer orde
 
 ## Quick Start (Automated Setup)
 
-Run this single command for complete setup:
+Run the setup script for complete automated setup:
 
+```bash
+./setup.sh
+```
+
+Or if you prefer npm:
 ```bash
 npm install && npm run db:setup
 ```
 
-This will:
+This will automatically:
+- ✅ Check Node.js and PostgreSQL installation
 - ✅ Install all dependencies
-- ✅ Check your PostgreSQL installation
+- ✅ Configure environment variables
+- ✅ Detect correct PostgreSQL username (macOS)
 - ✅ Test database connection
-- ✅ Create the database
+- ✅ Create the database if needed
 - ✅ Generate Prisma Client
-- ✅ Run migrations
+- ✅ Run migrations to create tables
 - ✅ Prompt to seed sample data
 
 ---
