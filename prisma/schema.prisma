@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dealer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  latitude  Float
+  longitude Float
+  address   String
+  rating    Float    @default(5.0)
+
+  // Performance tracking
+  totalOrdersFulfilled Int @default(0)
+  averageDeliveryTime  Int @default(0) // in hours
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+  orders   Order[]
+
+  @@map("dealers")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String
+  unit        String   @default("kg") // kg, liters, units, etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pricingTiers PricingTier[]
+  inventory    Inventory[]
+  orderItems   OrderItem[]
+
+  @@map("products")
+}
+
+model PricingTier {
+  id        String  @id @default(uuid())
+  productId String
+  dealerId  String?
+
+  minQuantity Float
+  maxQuantity Float?
+  pricePerUnit Float
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pricing_tiers")
+}
+
+model Inventory {
+  id            String  @id @default(uuid())
+  productId     String
+  dealerId      String
+  quantity      Float
+  reservedQty   Float   @default(0)
+  availableQty  Float   // computed: quantity - reservedQty
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  dealer  Dealer  @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, dealerId])
+  @@map("inventory")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  BACKORDERED
+}
+
+model Order {
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique
+
+  // Farmer/Customer details
+  farmerName        String
+  farmerPhone       String
+  farmerEmail       String?
+  deliveryLatitude  Float
+  deliveryLongitude Float
+  deliveryAddress   String
+
+  // Assigned dealer
+  dealerId          String?
+  dealer            Dealer?     @relation(fields: [dealerId], references: [id])
+
+  // Order details
+  status            OrderStatus @default(PENDING)
+  totalAmount       Float       @default(0)
+
+  // Delivery tracking
+  estimatedDeliveryHours Int?
+  distanceKm        Float?
+
+  // Timestamps
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  confirmedAt       DateTime?
+  deliveredAt       DateTime?
+
+  orderItems        OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  orderId     String
+  productId   String
+
+  quantity    Float
+  pricePerUnit Float
+  totalPrice  Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order_items")
+}
