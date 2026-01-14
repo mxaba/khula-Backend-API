@@ -37,6 +37,8 @@ Backend API for agri-dealers to manage product inventory and process farmer orde
    npm install
    ```
 
+   The project is configured with `.npmrc` to automatically use `--legacy-peer-deps`.
+
    If you encounter npm cache permission issues, try:
    ```bash
    sudo chown -R $(whoami) ~/.npm

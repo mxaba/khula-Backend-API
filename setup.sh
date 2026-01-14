@@ -35,6 +35,8 @@ if [ $? -ne 0 ]; then
     echo -e "   sudo chown -R \$(whoami) ~/.npm"
     echo -e "   npm cache clean --force"
     echo -e "   npm install"
+    echo ""
+    echo -e "${YELLOW}Note: .npmrc is configured to use --legacy-peer-deps automatically${NC}"
     exit 1
 fi
 
