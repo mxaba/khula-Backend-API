@@ -27,8 +27,8 @@ model Dealer {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  products Product[]
-  orders   Order[]
+  inventory Inventory[]
+  orders    Order[]
 
   @@map("dealers")
 }
