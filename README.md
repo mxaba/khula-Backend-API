@@ -29,58 +29,131 @@ Backend API for agri-dealers to manage product inventory and process farmer orde
 - PostgreSQL (v14 or higher)
 - npm or yarn
 
-## Installation
+## Quick Start (Automated Setup)
 
-1. **Install dependencies**:
+Run this single command for complete setup:
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install && npm run db:setup
+```
 
-   The project is configured with `.npmrc` to automatically use `--legacy-peer-deps`.
+This will:
+- ✅ Install all dependencies
+- ✅ Check your PostgreSQL installation
+- ✅ Test database connection
+- ✅ Create the database
+- ✅ Generate Prisma Client
+- ✅ Run migrations
+- ✅ Prompt to seed sample data
 
-   If you encounter npm cache permission issues, try:
-   ```bash
-   sudo chown -R $(whoami) ~/.npm
-   npm install
-   ```
+---
 
-2. **Set up environment variables**:
+## Manual Installation (Step by Step)
 
-   ```bash
-   cp .env.example .env
-   ```
+### 1. Install Dependencies
 
-   Update the `.env` file with your database credentials:
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/khula_db?schema=public"
-   PORT=3000
-   NODE_ENV=development
-   ```
+```bash
+npm install
+```
 
-3. **Create the database**:
+The project is configured with `.npmrc` to automatically use `--legacy-peer-deps`.
 
-   ```bash
-   createdb khula_db
-   ```
+If you encounter npm cache permission issues:
+```bash
+sudo chown -R $(whoami) ~/.npm
+npm install
+```
 
-   Or using PostgreSQL client:
-   ```sql
-   CREATE DATABASE khula_db;
-   ```
+### 2. Install PostgreSQL (if not already installed)
 
-4. **Run database migrations**:
+**macOS (Homebrew)**:
+```bash
+brew install postgresql@14
+brew services start postgresql@14
+```
 
-   ```bash
-   npm run prisma:generate
-   npm run prisma:migrate
-   ```
+**Ubuntu/Debian**:
+```bash
+sudo apt install postgresql postgresql-contrib
+sudo service postgresql start
+```
 
-5. **Seed the database** (optional - adds sample data):
+### 3. Configure Environment Variables
 
-   ```bash
-   npx prisma db seed
-   ```
+The `.env` file should already exist. Update it with your credentials:
+
+```bash
+DATABASE_URL="postgresql://YOUR_USERNAME@localhost:5432/khula_db?schema=public"
+```
+
+**Important Notes**:
+- **macOS (Homebrew)**: Use your macOS username (check with `whoami`)
+  - Example: `postgresql://mceboxaba@localhost:5432/khula_db?schema=public`
+  - No password needed for local Homebrew PostgreSQL
+- **Linux/Docker**: Usually `postgres` user with password
+  - Example: `postgresql://postgres:password@localhost:5432/khula_db?schema=public`
+
+### 4. Create Database
+
+```bash
+createdb khula_db
+```
+
+Or manually with psql:
+```bash
+psql -c "CREATE DATABASE khula_db;"
+```
+
+### 5. Test Database Connection
+
+```bash
+npm run db:test
+```
+
+You should see: ✅ Successfully connected to PostgreSQL!
+
+### 6. Generate Prisma Client
+
+```bash
+npm run prisma:generate
+```
+
+### 7. Run Database Migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+This creates all tables: dealers, products, orders, inventory, pricing_tiers, order_items
+
+### 8. Seed Database (Optional)
+
+```bash
+npx prisma db seed
+```
+
+This adds:
+- 3 sample dealers (Johannesburg, Pretoria, Durban)
+- 3 products (Fertilizer, Seeds, Pesticide)
+- 7 inventory items with stock levels
+
+---
+
+## Helper Commands
+
+```bash
+# Test database connection
+npm run db:test
+
+# View database in browser
+npm run prisma:studio
+
+# Create database (if not exists)
+npm run db:create
+
+# Complete database setup
+npm run db:setup
+```
 
 ## Running the Application
 
