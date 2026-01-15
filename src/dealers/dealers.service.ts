@@ -55,7 +55,7 @@ export class DealersService {
     const dealers = await this.prisma.dealer.findMany();
 
     // Filter by distance using Haversine formula
-    const nearbyDealers = dealers.filter((dealer) => {
+    const nearbyDealers = dealers.filter((dealer: any) => {
       const distance = this.calculateDistance(
         latitude,
         longitude,
