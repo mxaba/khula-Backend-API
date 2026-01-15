@@ -2,6 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDealerDto } from './dto/create-dealer.dto';
 import { DealerResponseDto } from './dto/dealer-response.dto';
+import { DistanceUtil } from '../common/utils/distance.util';
 
 @Injectable()
 export class DealersService {
@@ -56,7 +57,7 @@ export class DealersService {
 
     // Filter by distance using Haversine formula
     const nearbyDealers = dealers.filter((dealer: any) => {
-      const distance = this.calculateDistance(
+      const distance = DistanceUtil.calculateDistance(
         latitude,
         longitude,
         dealer.latitude,
@@ -66,36 +67,5 @@ export class DealersService {
     });
 
     return nearbyDealers;
-  }
-
-  /**
-   * Calculate distance between two points using Haversine formula
-   * Returns distance in kilometers
-   */
-  private calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ): number {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = this.toRadians(lat2 - lat1);
-    const dLon = this.toRadians(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRadians(lat1)) *
-        Math.cos(this.toRadians(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
-
-    return distance;
-  }
-
-  private toRadians(degrees: number): number {
-    return degrees * (Math.PI / 180);
   }
 }
